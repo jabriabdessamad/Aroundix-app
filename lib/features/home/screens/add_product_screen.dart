@@ -48,6 +48,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
     });
   }
 
+  void callback() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,10 +106,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     Column(
                       children: colorsWidgets,
                     ),
-                    // ColorWidget(
-                    //   images: images,
-                    //   colorName: ,
-                    // ),
                     SizedBox(
                       height: 10,
                     ),
@@ -202,10 +202,19 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                   colorsWidgets.add(ColorWidget(
                                       images: images,
                                       colorName: _colorNameController.text));
-                                  print(colorsWidgets.length);
+
+                                  if (sizes.isNotEmpty) {
+                                    for (var size in sizes) {
+                                      productPrices.add(PricesWidget(
+                                          color: _colorNameController.text,
+                                          size: size));
+                                    }
+                                    //print(productPrices.length);
+                                    print(colorsWidgets.length);
+                                  }
 
                                   images = [];
-                                  _colorNameController.text = "helloo";
+                                  _colorNameController.text = "";
                                 });
 
                                 //Navigator.pop(context);
@@ -253,12 +262,35 @@ class _AddProductScreenState extends State<AddProductScreen> {
                               SizeWidget(
                                 size: 'XS',
                                 sizes: sizes,
+                                colors: colors,
+                                productPrices: productPrices,
                               ),
-                              SizeWidget(size: 'S', sizes: sizes),
-                              SizeWidget(size: 'M', sizes: sizes),
-                              SizeWidget(size: 'L', sizes: sizes),
-                              SizeWidget(size: 'XL', sizes: sizes),
-                              SizeWidget(size: 'XLL', sizes: sizes)
+                              SizeWidget(
+                                size: 'S',
+                                sizes: sizes,
+                                colors: colors,
+                                productPrices: productPrices,
+                              ),
+                              SizeWidget(
+                                  size: 'M',
+                                  sizes: sizes,
+                                  colors: colors,
+                                  productPrices: productPrices),
+                              SizeWidget(
+                                  size: 'L',
+                                  sizes: sizes,
+                                  colors: colors,
+                                  productPrices: productPrices),
+                              SizeWidget(
+                                  size: 'XL',
+                                  sizes: sizes,
+                                  colors: colors,
+                                  productPrices: productPrices),
+                              SizeWidget(
+                                  size: 'XLL',
+                                  sizes: sizes,
+                                  colors: colors,
+                                  productPrices: productPrices)
                             ],
                           ),
                         ),
@@ -282,11 +314,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         const SizedBox(
                           height: 10,
                         ),
-                        PricesWidget(
-                          variants: variants,
-                          prices: prices,
-                          colors: colors,
-                          sizes: sizes,
+                        Column(
+                          children: productPrices,
                         ),
                         const SizedBox(
                           height: 35,
@@ -326,10 +355,19 @@ class _AddProductScreenState extends State<AddProductScreen> {
 }
 
 class SizeWidget extends StatefulWidget {
-  List<String> sizes = [];
+  List<String> colors;
+  List<String> sizes;
+  List<Widget> productPrices;
 
   String size;
-  SizeWidget({super.key, required this.size, required this.sizes});
+
+  SizeWidget({
+    super.key,
+    required this.colors,
+    required this.sizes,
+    required this.size,
+    required this.productPrices,
+  });
 
   @override
   State<SizeWidget> createState() => _SizeWidgetState();
@@ -344,11 +382,21 @@ class _SizeWidgetState extends State<SizeWidget> {
         setState(() {
           isSelected = !isSelected;
           if (isSelected == true) {
+            for (var color in widget.colors) {
+              widget.productPrices
+                  .add(PricesWidget(color: color, size: widget.size));
+            }
             widget.sizes.add(widget.size);
           } else {
+            for (var color in widget.colors) {
+              widget.productPrices.removeWhere((item) =>
+                  item == PricesWidget(color: color, size: widget.size));
+            }
             widget.sizes.remove(widget.size);
           }
         });
+        setState(() {});
+
         print(widget.sizes);
       },
       child: Container(
@@ -434,70 +482,43 @@ class _ColorWidgetState extends State<ColorWidget> {
 }
 
 class PricesWidget extends StatefulWidget {
-  final List<String> colors;
-  final List<String> sizes;
-  final List<ProductVariant> variants;
-  final List<String> prices;
-  const PricesWidget(
-      {super.key,
-      required this.variants,
-      required this.prices,
-      required this.colors,
-      required this.sizes});
+  final String color;
+  final String size;
+
+  PricesWidget({super.key, required this.color, required this.size});
 
   @override
   State<PricesWidget> createState() => _PricesWidgetState();
 }
 
 class _PricesWidgetState extends State<PricesWidget> {
-  void getVariants() {
-    for (var i in widget.colors) {
-      for (var j in widget.sizes) {
-        widget.variants.add(ProductVariant(
-            variantAttributes: VariantAttributes(
-                variantColor: VariantColor(colorName: i), variantSize: j),
-            id: '',
-            variantPrice: '',
-            productId: ''));
-      }
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    getVariants();
   }
 
   @override
   Widget build(BuildContext context) {
-    return (widget.colors.isNotEmpty && widget.prices.isNotEmpty)
-        ? Column(
-            children: [
-              for (var i in widget.variants)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 20,
-                      child: Text('variant'),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                      ),
-                    ),
-                    Container(
-                      width: 100,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: TextFormField(),
-                    )
-                  ],
-                )
-            ],
-          )
-        : Container();
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Container(
+          width: 100,
+          height: 20,
+          child: Text('${widget.color}/${widget.size}'),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black),
+          ),
+        ),
+        Container(
+          width: 100,
+          height: 20,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+          ),
+          child: TextFormField(),
+        )
+      ],
+    );
   }
 }
