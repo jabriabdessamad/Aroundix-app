@@ -24,6 +24,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   bool imagesEmpty = true;
   List<ProductVariant> variants = [];
   List<String> prices = [];
+  List<Widget> productPrices = [];
 
   Product? newProduct = Product(
       productOptions:
@@ -204,7 +205,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                   print(colorsWidgets.length);
 
                                   images = [];
-                                  _colorNameController.text = "";
+                                  _colorNameController.text = "helloo";
                                 });
 
                                 //Navigator.pop(context);
