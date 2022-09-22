@@ -389,8 +389,8 @@ class _SizeWidgetState extends State<SizeWidget> {
             widget.sizes.add(widget.size);
           } else {
             for (var color in widget.colors) {
-              widget.productPrices.removeWhere((item) =>
-                  item == PricesWidget(color: color, size: widget.size));
+              widget.productPrices
+                  .remove(PricesWidget(color: color, size: widget.size));
             }
             widget.sizes.remove(widget.size);
           }
