@@ -5,6 +5,9 @@ import 'package:aroundix_task/models/product_model.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:aroundix_task/shared/widgets/costum_text_form_field.dart';
+import 'package:aroundix_task/features/home/widgets/size_widget.dart';
+//import 'package:aroundix_task/features/home/widgets/color_widget.dart';
+import 'package:aroundix_task/features/home/widgets/prices_widget.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -16,6 +19,7 @@ class AddProductScreen extends StatefulWidget {
 class _AddProductScreenState extends State<AddProductScreen> {
   final TextEditingController _productNameController = TextEditingController();
   final TextEditingController _colorNameController = TextEditingController();
+  final TextEditingController _sizeController = TextEditingController();
 
   List<Widget> colorsWidgets = [];
   List<String> colors = [];
@@ -41,15 +45,63 @@ class _AddProductScreenState extends State<AddProductScreen> {
     });
   }
 
+  List<Widget> ImagesWidgets(List<File> images) {
+    List<Widget> list = [];
+    if (images.isNotEmpty) {
+      for (var i = 0; i < images.length; i++) {
+        list.add(
+          Container(
+            height: 50,
+            width: 50,
+            child: Image(image: FileImage(images[i])),
+          ),
+        );
+      }
+    }
+    return list;
+  }
+
+  Widget ColorWidget(String colorName, List<File> images) {
+    return Container(
+      margin: EdgeInsets.only(left: 20),
+      height: 50,
+      decoration: BoxDecoration(
+        border: Border.all(color: GlobalVariables.secondaryColor),
+      ),
+      child: Row(children: [
+        Container(
+          width: 80,
+          alignment: Alignment.center,
+          child: Text(
+            colorName,
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.w700, fontSize: 15),
+          ),
+        ),
+        SizedBox(
+          width: 2,
+          child: Container(color: Colors.black),
+        ),
+        Container(
+            width: MediaQuery.of(context).size.width - 180,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                SizedBox(
+                  width: 5,
+                ),
+                Row(children: ImagesWidgets(images))
+              ],
+            )),
+      ]),
+    );
+  }
+
   void selectImages() async {
     var result = await pickImages();
     setState(() {
       images = result;
     });
-  }
-
-  void callback() {
-    setState(() {});
   }
 
   @override
@@ -141,7 +193,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                 height: 120,
                                 child: (images.isNotEmpty)
                                     ? Center(
-                                        child: Text('${images.length} Images'),
+                                        child: Text(
+                                          '${images.length} Images',
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold),
+                                        ),
                                       )
                                     : Column(
                                         mainAxisAlignment:
@@ -198,28 +255,30 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                   //         id: ''));
                                   print(_colorNameController.text);
                                   print(images);
+
                                   colors.add(_colorNameController.text);
                                   colorsWidgets.add(ColorWidget(
-                                      images: images,
-                                      colorName: _colorNameController.text));
+                                      _colorNameController.text, images));
 
                                   if (sizes.isNotEmpty) {
                                     for (var size in sizes) {
-                                      productPrices.add(PricesWidget(
-                                          color: _colorNameController.text,
-                                          size: size));
+                                      variants.add(ProductVariant(
+                                          variantAttributes: VariantAttributes(
+                                              variantColor: VariantColor(
+                                                  colorName:
+                                                      _colorNameController
+                                                          .text),
+                                              variantSize: size),
+                                          id: '',
+                                          variantPrice: '',
+                                          productId: ''));
+                                      print(colorsWidgets.length);
                                     }
-                                    //print(productPrices.length);
-                                    print(colorsWidgets.length);
+
+                                    images = [];
+                                    _colorNameController.text = "";
                                   }
-
-                                  images = [];
-                                  _colorNameController.text = "";
                                 });
-
-                                //Navigator.pop(context);
-
-                                //print((newProduct!.toJson()));
                               }
                             },
                           ),
@@ -238,7 +297,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           height: 30,
                         ),
                         Row(
-                          children: const [
+                          children: [
                             SizedBox(
                               width: 20,
                             ),
@@ -249,51 +308,128 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                   fontSize: 20,
                                   fontWeight: FontWeight.w600),
                             ),
+                            Container(
+                                height: 30,
+                                width: MediaQuery.of(context).size.width * 0.7,
+                                child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: sizes.length,
+                                    itemBuilder: (context, item) => Container(
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 5),
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(7)),
+                                              border: Border.all(
+                                                  color: Colors.black)),
+                                          height: 25,
+                                          child: Container(
+                                            child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
+                                                children: [
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Text(sizes[item]),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        variants.removeWhere(
+                                                            (element) =>
+                                                                element
+                                                                    .variantAttributes
+                                                                    .variantSize ==
+                                                                sizes[item]);
+                                                        sizes.remove(
+                                                            sizes[item]);
+                                                      });
+                                                    },
+                                                    child: Container(
+                                                        child: Icon(Icons
+                                                            .delete_sharp)),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 2,
+                                                  )
+                                                ]),
+                                          ),
+                                        )))
                           ],
                         ),
                         SizedBox(
                           height: 10,
                         ),
+
                         Container(
-                          height: 30,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: [
-                              SizeWidget(
-                                size: 'XS',
-                                sizes: sizes,
-                                colors: colors,
-                                productPrices: productPrices,
-                              ),
-                              SizeWidget(
-                                size: 'S',
-                                sizes: sizes,
-                                colors: colors,
-                                productPrices: productPrices,
-                              ),
-                              SizeWidget(
-                                  size: 'M',
-                                  sizes: sizes,
-                                  colors: colors,
-                                  productPrices: productPrices),
-                              SizeWidget(
-                                  size: 'L',
-                                  sizes: sizes,
-                                  colors: colors,
-                                  productPrices: productPrices),
-                              SizeWidget(
-                                  size: 'XL',
-                                  sizes: sizes,
-                                  colors: colors,
-                                  productPrices: productPrices),
-                              SizeWidget(
-                                  size: 'XLL',
-                                  sizes: sizes,
-                                  colors: colors,
-                                  productPrices: productPrices)
-                            ],
+                          width: 160,
+                          alignment: Alignment.center,
+                          height: 40,
+                          child: TextFormField(
+                            controller: _sizeController,
+                            textAlign: TextAlign.center,
+                            decoration: const InputDecoration(
+                              hintText: 'Enter Size ',
+                            ),
                           ),
                         ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Container(
+                          width: 120,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: GlobalVariables.secondaryColor,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(7)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: const Offset(
+                                    0, 2), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          child: TextButton(
+                            child: const Text(
+                              'Add Size',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                if (_sizeController.text.isNotEmpty) {
+                                  sizes.add(_sizeController.text);
+                                  if (colors.isNotEmpty) {
+                                    for (var color in colors) {
+                                      variants.add(ProductVariant(
+                                          variantAttributes: VariantAttributes(
+                                              variantColor: VariantColor(
+                                                  colorName: color),
+                                              variantSize:
+                                                  _sizeController.text),
+                                          id: '',
+                                          variantPrice: '',
+                                          productId: ''));
+                                      print(colorsWidgets.length);
+                                    }
+
+                                    _sizeController.text = "";
+                                  }
+                                }
+                              });
+                            },
+                          ),
+                        ),
+
                         const SizedBox(
                           height: 30,
                         ),
@@ -314,9 +450,24 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         const SizedBox(
                           height: 10,
                         ),
-                        Column(
-                          children: productPrices,
+                        Container(
+                          height: variants.length * 30,
+                          width: double.infinity,
+                          child: ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              itemCount: variants.length,
+                              itemBuilder: (context, index) => PricesWidget(
+                                  color: variants[index]
+                                      .variantAttributes
+                                      .variantColor
+                                      .colorName,
+                                  size: variants[index]
+                                      .variantAttributes
+                                      .variantSize)),
                         ),
+                        // Column(
+                        //   children: productPrices,
+                        // ),
                         const SizedBox(
                           height: 35,
                         ),
@@ -351,174 +502,5 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     )),
                   ])),
         )));
-  }
-}
-
-class SizeWidget extends StatefulWidget {
-  List<String> colors;
-  List<String> sizes;
-  List<Widget> productPrices;
-
-  String size;
-
-  SizeWidget({
-    super.key,
-    required this.colors,
-    required this.sizes,
-    required this.size,
-    required this.productPrices,
-  });
-
-  @override
-  State<SizeWidget> createState() => _SizeWidgetState();
-}
-
-class _SizeWidgetState extends State<SizeWidget> {
-  bool isSelected = false;
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          isSelected = !isSelected;
-          if (isSelected == true) {
-            for (var color in widget.colors) {
-              widget.productPrices
-                  .add(PricesWidget(color: color, size: widget.size));
-            }
-            widget.sizes.add(widget.size);
-          } else {
-            for (var color in widget.colors) {
-              widget.productPrices
-                  .remove(PricesWidget(color: color, size: widget.size));
-            }
-            widget.sizes.remove(widget.size);
-          }
-        });
-        setState(() {});
-
-        print(widget.sizes);
-      },
-      child: Container(
-        margin: EdgeInsets.only(left: 20),
-        height: 20,
-        width: 50,
-        decoration: BoxDecoration(
-          color: !isSelected ? Colors.transparent : Colors.black,
-          border: Border.all(color: Colors.grey),
-        ),
-        child: Center(
-            child: Text(
-          widget.size,
-          style: TextStyle(color: isSelected ? Colors.white : Colors.black),
-        )),
-      ),
-    );
-  }
-}
-
-class ColorWidget extends StatefulWidget {
-  final String colorName;
-  final List<File> images;
-  const ColorWidget({super.key, required this.images, required this.colorName});
-
-  @override
-  State<ColorWidget> createState() => _ColorWidgetState();
-}
-
-class _ColorWidgetState extends State<ColorWidget> {
-  List<Widget> ImagesWidgets(List<File> images) {
-    List<Widget> list = [];
-    if (images.isNotEmpty) {
-      for (var i = 0; i < images.length; i++) {
-        list.add(
-          Container(
-            height: 50,
-            width: 50,
-            child: Image(image: FileImage(images[i])),
-          ),
-        );
-      }
-    }
-    return list;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(left: 20),
-      height: 50,
-      decoration: BoxDecoration(
-        border: Border.all(color: GlobalVariables.secondaryColor),
-      ),
-      child: Row(children: [
-        Container(
-          width: 80,
-          alignment: Alignment.center,
-          child: Text(
-            widget.colorName,
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.w700, fontSize: 15),
-          ),
-        ),
-        SizedBox(
-          width: 2,
-          child: Container(color: Colors.black),
-        ),
-        Container(
-            width: MediaQuery.of(context).size.width - 144,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                SizedBox(
-                  width: 5,
-                ),
-                Row(children: ImagesWidgets(widget.images))
-              ],
-            ))
-      ]),
-    );
-  }
-}
-
-class PricesWidget extends StatefulWidget {
-  final String color;
-  final String size;
-
-  PricesWidget({super.key, required this.color, required this.size});
-
-  @override
-  State<PricesWidget> createState() => _PricesWidgetState();
-}
-
-class _PricesWidgetState extends State<PricesWidget> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Container(
-          width: 100,
-          height: 20,
-          child: Text('${widget.color}/${widget.size}'),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.black),
-          ),
-        ),
-        Container(
-          width: 100,
-          height: 20,
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
-          ),
-          child: TextFormField(),
-        )
-      ],
-    );
   }
 }
