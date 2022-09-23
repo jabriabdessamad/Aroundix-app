@@ -5,8 +5,7 @@ import 'package:aroundix_task/models/product_model.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:aroundix_task/shared/widgets/costum_text_form_field.dart';
-import 'package:aroundix_task/features/home/widgets/size_widget.dart';
-//import 'package:aroundix_task/features/home/widgets/color_widget.dart';
+
 import 'package:aroundix_task/features/home/widgets/prices_widget.dart';
 
 class AddProductScreen extends StatefulWidget {
@@ -21,6 +20,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final TextEditingController _colorNameController = TextEditingController();
   final TextEditingController _sizeController = TextEditingController();
 
+  Map<ProductVariant, TextEditingController> pricesContollers = {};
   List<Widget> colorsWidgets = [];
   List<String> colors = [];
   List<String> sizes = [];
@@ -262,7 +262,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
                                   if (sizes.isNotEmpty) {
                                     for (var size in sizes) {
-                                      variants.add(ProductVariant(
+                                      var variant = ProductVariant(
                                           variantAttributes: VariantAttributes(
                                               variantColor: VariantColor(
                                                   colorName:
@@ -271,12 +271,20 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                               variantSize: size),
                                           id: '',
                                           variantPrice: '',
-                                          productId: ''));
-                                      print(colorsWidgets.length);
-                                    }
+                                          productId: '');
+                                      variants.add(variant);
 
-                                    images = [];
-                                    _colorNameController.text = "";
+                                      pricesContollers[variant] =
+                                          TextEditingController();
+                                      print(colorsWidgets.length);
+                                      images = [];
+                                      _colorNameController.text = "";
+                                    }
+                                  } else {
+                                    setState(() {
+                                      images = [];
+                                      _colorNameController.text = "";
+                                    });
                                   }
                                 });
                               }
@@ -308,9 +316,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                   fontSize: 20,
                                   fontWeight: FontWeight.w600),
                             ),
+                            SizedBox(
+                              width: 5,
+                            ),
                             Container(
                                 height: 30,
-                                width: MediaQuery.of(context).size.width * 0.7,
+                                width: MediaQuery.of(context).size.width * 0.65,
                                 child: ListView.builder(
                                     scrollDirection: Axis.horizontal,
                                     itemCount: sizes.length,
@@ -321,6 +332,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                               borderRadius: BorderRadius.all(
                                                   Radius.circular(7)),
                                               border: Border.all(
+                                                  width: 1.5,
                                                   color: Colors.black)),
                                           height: 25,
                                           child: Container(
@@ -410,7 +422,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                   sizes.add(_sizeController.text);
                                   if (colors.isNotEmpty) {
                                     for (var color in colors) {
-                                      variants.add(ProductVariant(
+                                      var variant = ProductVariant(
                                           variantAttributes: VariantAttributes(
                                               variantColor: VariantColor(
                                                   colorName: color),
@@ -418,7 +430,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                                   _sizeController.text),
                                           id: '',
                                           variantPrice: '',
-                                          productId: ''));
+                                          productId: '');
+                                      variants.add(variant);
+                                      pricesContollers[variant] =
+                                          TextEditingController();
                                       print(colorsWidgets.length);
                                     }
 
@@ -451,19 +466,46 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           height: 10,
                         ),
                         Container(
-                          height: variants.length * 30,
+                          height: variants.length * 50,
                           width: double.infinity,
                           child: ListView.builder(
                               scrollDirection: Axis.vertical,
                               itemCount: variants.length,
-                              itemBuilder: (context, index) => PricesWidget(
-                                  color: variants[index]
-                                      .variantAttributes
-                                      .variantColor
-                                      .colorName,
-                                  size: variants[index]
-                                      .variantAttributes
-                                      .variantSize)),
+                              itemBuilder: (context, index) => Container(
+                                    padding: EdgeInsets.only(bottom: 15),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        PricesWidget(
+                                            color: variants[index]
+                                                .variantAttributes
+                                                .variantColor
+                                                .colorName,
+                                            size: variants[index]
+                                                .variantAttributes
+                                                .variantSize),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Container(
+                                          width: 100,
+                                          height: 30,
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(5)),
+                                              border: Border.all(
+                                                  width: 1,
+                                                  color: Colors.black)),
+                                          child: TextFormField(
+                                            textAlign: TextAlign.center,
+                                            controller: pricesContollers[
+                                                variants[index]],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  )),
                         ),
                         // Column(
                         //   children: productPrices,
@@ -488,7 +530,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                             ],
                           ),
                           child: TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              print(pricesContollers[variants[1]]!.text);
+                            },
                             child: const Text(
                               'Add Product',
                               style: TextStyle(color: Colors.white),
