@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ProductService {
   // get all products
 
-  void getAllProducts({
+  getAllProducts({
     required BuildContext context,
   }) async {
     try {
@@ -36,11 +36,6 @@ class ProductService {
 
       Provider.of<ProductsProvider>(context, listen: false)
           .setProducts(allProducts);
-
-      print(Provider.of<ProductsProvider>(context, listen: false)
-          .allProducts[0]
-          .productOptions
-          .productSizes);
     } catch (err) {
       print(err.toString());
     }
@@ -48,4 +43,22 @@ class ProductService {
 
   // add product
 
+  addProduct({required Product product}) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('x-auth-token');
+
+      http.Response res = await http.post(
+        Uri.parse(
+            'https://aroundix-flutter-test-backend.herokuapp.com/API/add-product'),
+        body: product.toJson(),
+        headers: <String, String>{
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+      );
+    } catch (err) {
+      print(err.toString());
+    }
+  }
 }

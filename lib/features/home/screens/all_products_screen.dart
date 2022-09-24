@@ -2,6 +2,7 @@ import 'package:aroundix_task/constants/global_variables.dart';
 import 'package:aroundix_task/features/auth/services/auth_service.dart';
 import 'package:aroundix_task/features/home/screens/add_product_screen.dart';
 import 'package:aroundix_task/features/home/services/product_service.dart';
+import 'package:aroundix_task/features/home/widgets/product_widget.dart';
 import 'package:aroundix_task/providers/productsProvider.dart';
 import 'package:aroundix_task/providers/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -29,46 +30,49 @@ class _AllProductScreenState extends State<AllProductScreen> {
   Widget build(BuildContext context) {
     final allProducts = Provider.of<ProductsProvider>(context).allProducts;
 
-    return Scaffold(
-      body: Center(
-        child: TextButton(
-          child: const Text('get Product'),
-          onPressed: () {
-            productService.getAllProducts(context: context);
-
-            // print(Provider.of<ProductsProvider>(context, listen: false)
-            //     .allProducts[0]
-            //     .productOptions
-            //     .productColors[0]
-            //     .colorName);
-
-            // print(Provider.of<UserProvider>(context, listen: false)
-            //     .currentUser
-            //     .products);
-
-            // print(Provider.of<UserProvider>(context, listen: false)
-            //     .currentUser
-            //     .products[0]);
-
-            // print(Provider.of<UserProvider>(context, listen: false)
-            //     .currentUser
-            //     .token);
-          },
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
-        backgroundColor: GlobalVariables.secondaryColor,
-        onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => AddProductScreen()));
-        },
-        tooltip: 'Add a Product',
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    );
+    return (allProducts.isEmpty)
+        ? Center(
+            child: Container(child: Text('products')),
+          )
+        : Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              title: Text(
+                'All Products',
+                style: TextStyle(),
+              ),
+              backgroundColor: GlobalVariables.secondaryColor,
+            ),
+            body: Container(
+              child: GridView.builder(
+                itemCount: allProducts.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2),
+                itemBuilder: (context, index) {
+                  final product = allProducts[index];
+                  return ProductWidget(
+                      image: product
+                          .productOptions.productColors[0].colorImages[0],
+                      productName: product.productName);
+                },
+              ),
+            ),
+            floatingActionButton: FloatingActionButton(
+              child: const Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+              backgroundColor: GlobalVariables.secondaryColor,
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddProductScreen()));
+              },
+              tooltip: 'Add a Product',
+            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+          );
   }
 }
