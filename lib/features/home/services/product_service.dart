@@ -100,4 +100,32 @@ class ProductService {
       print(err.toString());
     }
   }
+
+  // get product by Id
+  getProductById({
+    required String id,
+  }) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('x-auth-token');
+      http.Response res = await http.get(
+        Uri.parse(
+            'https://aroundix-flutter-test-backend.herokuapp.com/API/get-product-by-id/$id'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json;charset=UTF-8',
+        },
+      );
+      if (res.statusCode == 200) {
+        Product product = Product.fromJson(jsonDecode(res.body)['product']);
+        return null;
+      } else {
+        print(res.body);
+        return null;
+      }
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
 }

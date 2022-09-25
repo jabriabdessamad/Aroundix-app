@@ -57,6 +57,7 @@ class _AllProductScreenState extends State<AllProductScreen> {
                 itemBuilder: (context, index) {
                   final product = allProducts[index];
                   return ProductWidget(
+                      id: product.id,
                       image: product
                           .productOptions.productColors[0].colorImages[0],
                       productName: product.productName);
