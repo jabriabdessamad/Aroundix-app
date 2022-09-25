@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:aroundix_task/constants/global_variables.dart';
 import 'package:aroundix_task/constants/utils.dart';
+import 'package:aroundix_task/features/home/screens/all_products_screen.dart';
 import 'package:aroundix_task/features/home/services/product_service.dart';
 import 'package:aroundix_task/models/product_model.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -564,7 +565,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                 }
                                 productService.addProduct(product: newProduct!);
 
-                                print(newProduct!.toJson());
+                                //print(newProduct!.toJson());
                               }
                               //print(newProduct!.toJson());
                             },

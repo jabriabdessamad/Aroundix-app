@@ -118,7 +118,7 @@ class ProductService {
       );
       if (res.statusCode == 200) {
         Product product = Product.fromJson(jsonDecode(res.body)['product']);
-        return null;
+        return product;
       } else {
         print(res.body);
         return null;

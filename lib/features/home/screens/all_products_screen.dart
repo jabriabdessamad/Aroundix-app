@@ -31,7 +31,7 @@ class _AllProductScreenState extends State<AllProductScreen> {
 
     return (allProducts.isEmpty)
         ? Center(
-            child: Container(child: Text('products')),
+            child: CircularProgressIndicator(),
           )
         : Scaffold(
             appBar: AppBar(
