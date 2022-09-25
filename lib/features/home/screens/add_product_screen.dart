@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:aroundix_task/constants/global_variables.dart';
 import 'package:aroundix_task/constants/utils.dart';
+import 'package:aroundix_task/features/home/services/product_service.dart';
 import 'package:aroundix_task/models/product_model.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final TextEditingController _productNameController = TextEditingController();
   final TextEditingController _colorNameController = TextEditingController();
   final TextEditingController _sizeController = TextEditingController();
+
+  final ProductService productService = ProductService();
 
   Map<ProductVariant, TextEditingController> pricesContollers = {};
   List<Widget> colorsWidgets = [];
@@ -43,6 +46,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
     setState(() {
       newProduct = product;
     });
+  }
+
+  bool PricesFiled() {
+    var notEmpty = true;
+    for (var variant in variants) {
+      if (pricesContollers[variant]!.text.isEmpty) {
+        notEmpty = false;
+      }
+    }
+    return notEmpty;
   }
 
   List<Widget> ImagesWidgets(List<File> images) {
@@ -246,13 +259,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
                               if (_colorNameController.text.isNotEmpty &&
                                   images.isNotEmpty) {
                                 setState(() {
-                                  // newProduct!.productOptions.productColors.add(
-                                  //     ProductColor(
-                                  //         colorImages: images
-                                  //             .map((e) => e.path)
-                                  //             .toList(),
-                                  //         colorName: _colorNameController.text,
-                                  //         id: ''));
+                                  newProduct!.productOptions.productColors.add(
+                                      ProductColor(
+                                          colorImages: images
+                                              .map((e) => e.path)
+                                              .toList(),
+                                          colorName: _colorNameController.text,
+                                          id: ''));
                                   print(_colorNameController.text);
                                   print(images);
 
@@ -420,6 +433,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                               setState(() {
                                 if (_sizeController.text.isNotEmpty) {
                                   sizes.add(_sizeController.text);
+                                  newProduct!.productOptions.productSizes
+                                      .add(_sizeController.text);
                                   if (colors.isNotEmpty) {
                                     for (var color in colors) {
                                       var variant = ProductVariant(
@@ -436,7 +451,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                           TextEditingController();
                                       print(colorsWidgets.length);
                                     }
-
+                                    _sizeController.text = "";
+                                  } else {
                                     _sizeController.text = "";
                                   }
                                 }
@@ -531,7 +547,26 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           ),
                           child: TextButton(
                             onPressed: () {
-                              print(pricesContollers[variants[1]]!.text);
+                              if (_productNameController.text.isNotEmpty &&
+                                  variants.isNotEmpty &&
+                                  PricesFiled()) {
+                                newProduct!.productName =
+                                    _productNameController.text;
+                                for (var variant in variants) {
+                                  newProduct!.productVariants.add(
+                                      ProductVariant(
+                                          variantAttributes:
+                                              variant.variantAttributes,
+                                          id: '',
+                                          variantPrice:
+                                              pricesContollers[variant]!.text,
+                                          productId: ''));
+                                }
+                                productService.addProduct(product: newProduct!);
+
+                                print(newProduct!.toJson());
+                              }
+                              //print(newProduct!.toJson());
                             },
                             child: const Text(
                               'Add Product',

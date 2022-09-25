@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:aroundix_task/constants/global_variables.dart';
 import 'package:flutter/material.dart';
 
 class ProductWidget extends StatelessWidget {
@@ -13,13 +14,14 @@ class ProductWidget extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            width: MediaQuery.of(context).size.width * 0.4,
+            width: MediaQuery.of(context).size.width * 0.45,
             height: MediaQuery.of(context).size.width * 0.35,
             decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: NetworkImage(image), fit: BoxFit.fill),
                 borderRadius: BorderRadius.all(Radius.circular(5)),
                 border: Border.all(
-                    width: 2, color: Color.fromARGB(255, 187, 187, 187))),
-            child: Image(image: NetworkImage(image)),
+                    width: 2, color: GlobalVariables.secondaryColor)),
           ),
           const SizedBox(
             height: 10,
@@ -35,10 +37,11 @@ class ProductWidget extends StatelessWidget {
                     productName,
                     style: TextStyle(
                       color: Colors.black,
+                      fontWeight: FontWeight.w600,
                       fontSize: 16,
                     ),
                   ),
-                  Icon(Icons.delete)
+                  Icon(Icons.delete_outline)
                 ]),
           )
         ],

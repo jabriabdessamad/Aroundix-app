@@ -1,6 +1,7 @@
 import 'package:aroundix_task/constants/global_variables.dart';
 import 'package:aroundix_task/features/home/screens/all_products_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:aroundix_task/features/home/screens/profile_screen.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
@@ -14,12 +15,7 @@ class _BottomBarState extends State<BottomBar> {
   double bottomBarWith = 42;
   double bottomBarBorderWith = 5;
 
-  List<Widget> pages = [
-    const AllProductScreen(),
-    const Center(
-      child: Text('profile'),
-    )
-  ];
+  List<Widget> pages = [const AllProductScreen(), const ProfileScreen()];
 
   void _updatePage(int page) {
     setState(() {

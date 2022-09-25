@@ -18,7 +18,6 @@ class AllProductScreen extends StatefulWidget {
 
 class _AllProductScreenState extends State<AllProductScreen> {
   ProductService productService = ProductService();
-  AuthService _auth = AuthService();
 
   @override
   void initState() {
@@ -36,9 +35,16 @@ class _AllProductScreenState extends State<AllProductScreen> {
           )
         : Scaffold(
             appBar: AppBar(
-              centerTitle: true,
+              actions: [
+                TextButton(
+                    onPressed: () {},
+                    child: Icon(
+                      Icons.logout,
+                      color: Colors.white,
+                    ))
+              ],
               title: Text(
-                'All Products',
+                'Products',
                 style: TextStyle(),
               ),
               backgroundColor: GlobalVariables.secondaryColor,
