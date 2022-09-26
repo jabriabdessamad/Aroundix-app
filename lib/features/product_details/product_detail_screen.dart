@@ -1,9 +1,7 @@
 import 'package:aroundix_task/constants/global_variables.dart';
 import 'package:aroundix_task/features/home/services/product_service.dart';
 import 'package:aroundix_task/models/product_model.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String productId;
@@ -18,6 +16,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Product? _product;
   ProductVariant? variant;
   int selectedSize = 0;
+  Map<String, dynamic> showedImages = {};
 
   @override
   void initState() {
@@ -25,9 +24,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     getProduct();
   }
 
+  String getVariantPrice(String color, String size) {
+    String price = _product!.productVariants
+        .where((element) =>
+            (element.variantAttributes.variantColor.colorName == color) &&
+            (element.variantAttributes.variantSize == size))
+        .toList()[0]
+        .variantPrice;
+    return price;
+  }
+
   Future<Product?> getProduct() async {
     _product = await _productService.getProductById(id: widget.productId);
-    if (_product != null) {
+    if (_product != null && variant == null) {
       variant = _product!.productVariants[0];
     }
     return _product;
@@ -38,6 +47,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
+        actions: [
+          Icon(Icons.edit),
+          SizedBox(
+            width: 15,
+          )
+        ],
       ),
       body: FutureBuilder<Product?>(
         future: getProduct(),
@@ -48,37 +63,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                        height: MediaQuery.of(context).size.height * 0.45,
+                        height: MediaQuery.of(context).size.height * 0.4,
                         width: double.infinity,
-                        child: Container(
-                          height: MediaQuery.of(context).size.height * 0.5,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
                             borderRadius: BorderRadius.vertical(
-                                bottom: Radius.circular(25)),
-                            image: DecorationImage(
-                                image: NetworkImage(_product!.productOptions
-                                    .productColors[0].colorImages[0]),
-                                fit: BoxFit.fill),
-                          ),
+                                bottom: Radius.circular(70))),
+                        child: Image(
+                          image: NetworkImage(_product!
+                              .productOptions.productColors[0].colorImages[0]),
                         )),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Text(
-                            '\$ ${_product!.productVariants[0].variantPrice}.00',
-                            style: TextStyle(
-                                color: Color.fromARGB(255, 73, 70, 70),
-                                fontSize: 25,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                        Container(
                             width: MediaQuery.of(context).size.width * 0.4,
-                            height: 50,
+                            height: 40,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.vertical(
                                     bottom: Radius.circular(7))),
@@ -102,19 +103,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 ),
                               ],
                             )),
-                        Container(
-                          child: Row(children: [
-                            Icon(
-                              Icons.star,
-                              color: Colors.orange,
-                              size: 28,
-                            ),
-                            Text('4.5'),
-                            SizedBox(
-                              width: 20,
-                            )
-                          ]),
-                        )
                       ],
                     ),
                     SizedBox(
@@ -138,19 +126,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            _product!.productName,
-                            style: TextStyle(
-                              fontSize: 23.0,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: "Pacifico",
-                            ),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                            '${_product!.productName} ${_product!.productOptions.productColors[0].colorName} ${_product!.productOptions.productSizes[0]}',
+                            '${_product!.productName} ${variant!.variantAttributes.variantSize} ${variant!.variantAttributes.variantColor.colorName}',
                             style: TextStyle(
                               fontSize: 17.0,
                               color: Color.fromARGB(255, 66, 66, 66),
@@ -158,11 +134,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               fontFamily: "Pacifico",
                             ),
                           ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            '\$  ${getVariantPrice(variant!.variantAttributes.variantColor.colorName, variant!.variantAttributes.variantSize)} .00',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 25,
+                                fontWeight: FontWeight.w600),
+                          ),
                         ],
                       ),
                     ),
                     SizedBox(
-                      height: 15,
+                      height: 40,
                     ),
                     Container(
                       height: 50,
@@ -187,7 +173,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     ),
                     SizedBox(
-                      height: 15,
+                      height: 10,
                     ),
                     Container(
                       height: 25,
@@ -204,6 +190,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               onTap: () {
                                 setState(() {
                                   selectedSize = item;
+
+                                  variant!.variantAttributes.variantSize =
+                                      _product!
+                                          .productOptions.productSizes[item];
                                 });
                               },
                               child: Container(

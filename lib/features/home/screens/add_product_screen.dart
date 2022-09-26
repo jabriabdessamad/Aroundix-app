@@ -567,6 +567,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
                                 //print(newProduct!.toJson());
                               }
+                              productService.addProduct(product: newProduct!);
+
                               //print(newProduct!.toJson());
                             },
                             child: const Text(

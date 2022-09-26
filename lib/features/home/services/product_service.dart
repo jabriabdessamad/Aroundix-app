@@ -71,14 +71,30 @@ class ProductService {
       Map<String, dynamic> requestBody = {'productName': product.productName};
       for (var i = 0; i < product.productOptions.productColors.length; i++) {
         requestBody['productColors[$i][colorName]'] =
-            product.productOptions.productColors[0].colorName;
+            product.productOptions.productColors[i].colorName;
         requestBody['productColors[$i][colorImages]'] =
-            images[product.productOptions.productColors[0].colorName];
+            images[product.productOptions.productColors[i].colorName];
+
+        // requestBody['productColors[$i][colorImages]'] =
+        //     product.productOptions.productColors[i].colorImages
+        //         .map(
+        //           (item) async => {
+        //             "image": await MultipartFile.fromFile(
+        //               item,
+        //               filename: item.split('/').last,
+        //               contentType: MediaType('image', 'jpg'),
+        //             ),
+        //             "type": "image/${item.split('/').last}}"
+        //           },
+        //         )
+        //         .toList();
       }
+
       for (var i = 0; i < product.productOptions.productSizes.length; i++) {
         requestBody['productSizes[$i]'] =
             product.productOptions.productSizes[i];
       }
+
       for (var i = 0; i < product.productVariants.length; i++) {
         requestBody['productVariations[$i][variantPrice]'] =
             product.productVariants[i].variantPrice;
@@ -92,6 +108,7 @@ class ProductService {
       dio.options.headers['content-Type'] = 'application/json';
       dio.options.headers["authorization"] = "Bearer $token";
       FormData formData = FormData.fromMap(requestBody);
+
       var response = await dio.post(
           "https://aroundix-flutter-test-backend.herokuapp.com/API/add-product",
           data: formData);
