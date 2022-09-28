@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:aroundix_task/constants/global_variables.dart';
 import 'package:aroundix_task/features/home/services/product_service.dart';
 import 'package:aroundix_task/models/product_model.dart';
@@ -17,6 +19,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   ProductVariant? variant;
   int selectedSize = 0;
   Map<String, dynamic> showedImages = {};
+  int SelectedVariantColor = 0;
+  int bigImage = 0;
 
   @override
   void initState() {
@@ -71,7 +75,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 bottom: Radius.circular(70))),
                         child: Image(
                           image: NetworkImage(_product!
-                              .productOptions.productColors[0].colorImages[0]),
+                              .productOptions
+                              .productColors[SelectedVariantColor]
+                              .colorImages[bigImage]),
                         )),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -89,16 +95,41 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 ListView.builder(
                                   shrinkWrap: true,
                                   scrollDirection: Axis.horizontal,
-                                  itemCount: _product!.productOptions
-                                      .productColors[0].colorImages.length,
-                                  itemBuilder: (context, item) => Container(
-                                    height: 50,
-                                    width: 50,
-                                    child: Image(
-                                        image: NetworkImage(_product!
-                                            .productOptions
-                                            .productColors[0]
-                                            .colorImages[item])),
+                                  itemCount: _product!
+                                      .productOptions.productColors
+                                      .where((element) =>
+                                          element.colorName ==
+                                          variant!.variantAttributes
+                                              .variantColor.colorName)
+                                      .toList()[0]
+                                      .colorImages
+                                      .length,
+                                  itemBuilder: (context, item) => InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        bigImage = item;
+                                      });
+                                    },
+                                    child: Container(
+                                        decoration: (item == bigImage)
+                                            ? BoxDecoration(
+                                                color: Colors.white,
+                                                border: Border.all(
+                                                    width: 2,
+                                                    color: Colors.black))
+                                            : BoxDecoration(
+                                                color: Colors.white),
+                                        height: 50,
+                                        width: 50,
+                                        child: Image(
+                                            image: NetworkImage(_product!
+                                                .productOptions.productColors
+                                                .where((element) =>
+                                                    element.colorName ==
+                                                    variant!.variantAttributes
+                                                        .variantColor.colorName)
+                                                .toList()[0]
+                                                .colorImages[item]))),
                                   ),
                                 ),
                               ],
@@ -106,11 +137,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ],
                     ),
                     SizedBox(
-                      height: 20,
+                      height: 60,
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width * 0.8,
-                      height: 100,
+                      height: 120,
                       decoration: BoxDecoration(
                           color: GlobalVariables.backgroundColor,
                           boxShadow: [
@@ -126,7 +157,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            '${_product!.productName} ${variant!.variantAttributes.variantSize} ${variant!.variantAttributes.variantColor.colorName}',
+                            '${_product!.productName}  ',
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: "Pacifico",
+                            ),
+                          ),
+                          Text(
+                            '${variant!.variantAttributes.variantSize} / ${variant!.variantAttributes.variantColor.colorName}',
                             style: TextStyle(
                               fontSize: 17.0,
                               color: Color.fromARGB(255, 66, 66, 66),
@@ -135,10 +175,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           ),
                           SizedBox(
-                            height: 5,
+                            height: 15,
                           ),
                           Text(
-                            '\$  ${getVariantPrice(variant!.variantAttributes.variantColor.colorName, variant!.variantAttributes.variantSize)} .00',
+                            '\$${getVariantPrice(variant!.variantAttributes.variantColor.colorName, variant!.variantAttributes.variantSize)} .00',
                             style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 25,
@@ -161,12 +201,29 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             scrollDirection: Axis.horizontal,
                             itemCount:
                                 _product!.productOptions.productColors.length,
-                            itemBuilder: (context, item) => Container(
-                              height: 50,
-                              width: 50,
-                              child: Image(
-                                  image: NetworkImage(_product!.productOptions
-                                      .productColors[item].colorImages[0])),
+                            itemBuilder: (context, item) => InkWell(
+                              onTap: () {
+                                setState(() {
+                                  SelectedVariantColor = item;
+                                  variant!.variantAttributes.variantColor
+                                          .colorName =
+                                      _product!.productOptions
+                                          .productColors[item].colorName;
+                                });
+                              },
+                              child: Container(
+                                decoration: (SelectedVariantColor == item)
+                                    ? BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(
+                                            color: Colors.black, width: 2))
+                                    : BoxDecoration(color: Colors.white),
+                                height: 50,
+                                width: 50,
+                                child: Image(
+                                    image: NetworkImage(_product!.productOptions
+                                        .productColors[item].colorImages[0])),
+                              ),
                             ),
                           ),
                         ],

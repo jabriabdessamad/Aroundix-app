@@ -28,6 +28,7 @@ class _AllProductScreenState extends State<AllProductScreen> {
   @override
   Widget build(BuildContext context) {
     final allProducts = Provider.of<ProductsProvider>(context).allProducts;
+    final AuthService _auth = AuthService();
 
     return (allProducts.isEmpty)
         ? Center(
@@ -37,7 +38,9 @@ class _AllProductScreenState extends State<AllProductScreen> {
             appBar: AppBar(
               actions: [
                 TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _auth.logout();
+                    },
                     child: Icon(
                       Icons.logout,
                       color: Colors.white,

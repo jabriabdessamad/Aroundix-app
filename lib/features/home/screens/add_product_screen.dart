@@ -33,6 +33,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   List<ProductVariant> variants = [];
   List<String> prices = [];
   List<Widget> productPrices = [];
+  bool isLoading = false;
 
   Product? newProduct = Product(
       productOptions:
@@ -564,17 +565,29 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                           productId: ''));
                                 }
                                 productService.addProduct(product: newProduct!);
+                                setState(() {
+                                  isLoading = true;
+                                });
+
+                                Future.delayed(const Duration(seconds: 1), () {
+                                  setState(() {
+                                    Navigator.of(context).pop();
+                                  });
+                                });
 
                                 //print(newProduct!.toJson());
                               }
-                              productService.addProduct(product: newProduct!);
 
                               //print(newProduct!.toJson());
                             },
-                            child: const Text(
-                              'Add Product',
-                              style: TextStyle(color: Colors.white),
-                            ),
+                            child: isLoading
+                                ? CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : const Text(
+                                    'Add Product',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                           ),
                         ),
                         const SizedBox(

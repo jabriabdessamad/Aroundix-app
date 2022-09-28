@@ -25,6 +25,7 @@ class _ListProductWidgetState extends State<ListProductWidget> {
               height: 40,
               width: 40,
               decoration: BoxDecoration(
+                  color: Colors.white,
                   shape: BoxShape.circle,
                   image: DecorationImage(
                       image: NetworkImage(widget.productImage))),

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:aroundix_task/constants/global_variables.dart';
 import 'package:aroundix_task/features/auth/screens/register_screen.dart';
 import 'package:aroundix_task/features/auth/services/auth_service.dart';
@@ -16,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool isloading = false;
 
   @override
   void dispose() {
@@ -24,8 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordController.dispose();
   }
 
-  void signInUser() {
-    authService.signInUser(
+  void signInUser() async {
+    String res = await authService.signInUser(
         context: context,
         email: _emailController.text,
         password: _passwordController.text);
@@ -42,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
             width: double.infinity,
             child: Column(children: [
               SizedBox(
-                height: 50,
+                height: 100,
               ),
               const Image(
                 image: AssetImage('assets/images/logo.png'),
@@ -114,13 +117,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: TextButton(
                   onPressed: () async {
                     if (_signInFormKey.currentState!.validate()) {
+                      setState(() {
+                        isloading = true;
+                      });
                       signInUser();
                     }
                   },
-                  child: Text(
-                    'Login',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  child: (isloading)
+                      ? CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : Text(
+                          'Login',
+                          style: TextStyle(color: Colors.white),
+                        ),
                 ),
               ),
               TextButton(

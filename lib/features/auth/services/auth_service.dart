@@ -48,7 +48,7 @@ class AuthService {
   }
 
   // sign in user
-  void signInUser(
+  Future<String> signInUser(
       {required BuildContext context,
       required String email,
       required String password}) async {
@@ -98,8 +98,10 @@ class AuthService {
                 MaterialPageRoute(builder: (context) => const BottomBar()),
                 (route) => false);
           });
+      return res.statusCode.toString();
     } catch (err) {
       //showSnackBar(context, err.toString());
+      return err.toString();
     }
   }
 
@@ -139,5 +141,10 @@ class AuthService {
     } catch (err) {
       //showSnackBar(context, err.toString());
     }
+  }
+
+  void logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('x-auth-token', '');
   }
 }

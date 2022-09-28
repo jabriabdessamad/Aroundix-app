@@ -31,9 +31,9 @@ class ProductWidget extends StatelessWidget {
             child: Container(
               width: MediaQuery.of(context).size.width * 0.45,
               height: MediaQuery.of(context).size.width * 0.35,
+              child: Image(image: NetworkImage(image)),
               decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: NetworkImage(image), fit: BoxFit.fill),
+                  color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(5)),
                   border: Border.all(
                       width: 1.5, color: GlobalVariables.secondaryColor)),
@@ -43,7 +43,7 @@ class ProductWidget extends StatelessWidget {
             height: 10,
           ),
           Container(
-            width: MediaQuery.of(context).size.width * 0.4,
+            width: MediaQuery.of(context).size.width * 0.45,
             height: MediaQuery.of(context).size.width * 0.1,
             child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,7 +54,6 @@ class ProductWidget extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
-                      fontSize: 16,
                     ),
                   ),
                   Icon(Icons.delete_outline)
