@@ -147,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     text: 'or ',
                     children: <TextSpan>[
                       TextSpan(
-                          text: 'Sign up',
+                          text: 'register',
                           style:
                               TextStyle(color: GlobalVariables.secondaryColor)),
                     ],
