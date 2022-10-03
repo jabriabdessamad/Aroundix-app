@@ -562,7 +562,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                           id: '',
                                           variantPrice:
                                               pricesContollers[variant]!.text,
-                                          productId: ''));
+                                          productId: ' '));
                                 }
                                 productService.addProduct(product: newProduct!);
                                 setState(() {
