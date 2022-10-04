@@ -1,7 +1,6 @@
 import 'package:aroundix_task/constants/global_variables.dart';
 import 'package:aroundix_task/features/auth/screens/auth_screen.dart';
 import 'package:aroundix_task/features/auth/services/auth_service.dart';
-import 'package:aroundix_task/features/home/screens/home_screen.dart';
 import 'package:aroundix_task/features/home/services/product_service.dart';
 import 'package:aroundix_task/providers/productsProvider.dart';
 import 'package:aroundix_task/providers/user_provider.dart';
